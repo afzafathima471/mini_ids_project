@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-chart-bar text-primary me-2"></i>Dashboard</h2>
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="card border-0 shadow-sm stat-card bg-primary text-white"><div class="card-body text-center"><h4>{{ total }}</h4><p>Total Packets</p></div></div></div>
+  <div class="col-md-4"><div class="card border-0 shadow-sm stat-card bg-danger text-white"><div class="card-body text-center"><h4>{{ alerts }}</h4><p>Total Alerts</p></div></div></div>
+  <div class="col-md-4"><div class="card border-0 shadow-sm stat-card bg-warning text-dark"><div class="card-body text-center"><h4>{{ new_alerts }}</h4><p>New Alerts</p></div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-header">Attack Distribution</div>
+    <div class="card-body"><canvas id="distChart" height="250"></canvas></div></div></div>
+  <div class="col-md-6"><div class="card border-0 shadow-sm"><div class="card-header">Severity Breakdown</div>
+    <div class="card-body"><canvas id="sevChart" height="250"></canvas></div></div></div>
+  <div class="col-12"><div class="card border-0 shadow-sm"><div class="card-header">Daily Traffic</div>
+    <div class="card-body"><canvas id="dailyChart" height="100"></canvas></div></div></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* eslint-disable */
+// @ts-nocheck
+document.addEventListener('DOMContentLoaded', function() {
+    const COLORS = ['#0d6efd', '#dc3545', '#ffc107', '#198754', '#6f42c1', '#0dcaf0'];
+
+    // Attack Distribution
+    const distCtx = document.getElementById('distChart');
+    if (distCtx) {
+        new Chart(distCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ dist_labels | safe }},
+                datasets: [{
+                    data: {{ dist_values | safe }},
+                    backgroundColor: COLORS
+                }]
+            }
+        });
+    }
+
+    // Severity Breakdown
+    const sevCtx = document.getElementById('sevChart');
+    if (sevCtx) {
+        new Chart(sevCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ sev_labels | safe }},
+                datasets: [{
+                    label: 'Alerts',
+                    data: {{ sev_values | safe }},
+                    backgroundColor: COLORS
+                }]
+            },
+            options: { plugins: { legend: { display: false } } }
+        });
+    }
+
+    // Daily Traffic
+    const dailyCtx = document.getElementById('dailyChart');
+    if (dailyCtx) {
+        new Chart(dailyCtx, {
+            type: 'line',
+            data: {
+                labels: {{ daily_labels | safe }},
+                datasets: [{
+                    label: 'Packets',
+                    data: {{ daily_values | safe }},
+                    borderColor: '#0d6efd',
+                    fill: true,
+                    backgroundColor: 'rgba(13,110,253,.1)'
+                }]
+            },
+            options: { plugins: { legend: { display: false } } }
+        });
+    }
+});
+</script>
+{% endblock %}

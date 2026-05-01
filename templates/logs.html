@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Traffic Logs{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-list text-info me-2"></i>Traffic Logs</h2>
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover table-sm mb-0">
+      <thead class="table-dark"><tr><th>Time</th><th>Src IP</th><th>Dst IP</th><th>Protocol</th><th>Service</th><th>Src Bytes</th><th>Dst Bytes</th><th>Prediction</th><th>Confidence</th></tr></thead>
+      <tbody>
+      {% for l in logs.items %}
+      <tr>
+        <td><small>{{ l.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</small></td>
+        <td>{{ l.src_ip }}</td><td>{{ l.dst_ip }}</td>
+        <td>{{ l.protocol }}</td><td>{{ l.service }}</td>
+        <td>{{ l.src_bytes }}</td><td>{{ l.dst_bytes }}</td>
+        <td><span class="badge bg-{{ 'success' if l.prediction == 'normal' else 'danger' }}">{{ l.prediction }}</span></td>
+        <td>{{ (l.confidence*100)|round(1) }}%</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="9" class="text-center text-muted py-4">No logs yet</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<nav class="mt-3">
+  <ul class="pagination justify-content-center">
+    {% if logs.has_prev %}<li class="page-item"><a class="page-link" href="?page={{ logs.prev_num }}">Prev</a></li>{% endif %}
+    {% if logs.has_next %}<li class="page-item"><a class="page-link" href="?page={{ logs.next_num }}">Next</a></li>{% endif %}
+  </ul>
+</nav>
+{% endblock %}

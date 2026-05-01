@@ -1,0 +1,9 @@
+body { background: #f0f2f5; }
+.stat-card { border-radius: 12px; transition: transform .2s; }
+.stat-card:hover { transform: translateY(-3px); }
+.sim-feed { max-height: 300px; overflow-y: auto; }
+.btn-xs { padding: 2px 8px; font-size: 0.75rem; border-radius: 4px; }
+.navbar-brand { letter-spacing: 1px; }
+.card { border-radius: 10px; }
+.badge { font-size: 0.75em; }
+table th { font-size: 0.85rem; }
