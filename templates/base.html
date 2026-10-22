@@ -8,7 +8,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
 </head>
-<body>
+<body class="{% if session.get('user_id') %}app-shell{% endif %} {% block body_class %}{% endblock %}">
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand fw-bold" href="/"><i class="fas fa-shield-alt me-2"></i>Mini IDS</a>

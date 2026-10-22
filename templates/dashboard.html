@@ -22,7 +22,7 @@
 /* eslint-disable */
 // @ts-nocheck
 document.addEventListener('DOMContentLoaded', function() {
-    const COLORS = ['#0d6efd', '#dc3545', '#ffc107', '#198754', '#6f42c1', '#0dcaf0'];
+    const COLORS = ['#147d83', '#d94f4f', '#e3a329', '#3478b8', '#8064a2', '#38a6b5'];
 
     // Attack Distribution
     const distCtx = document.getElementById('distChart');
@@ -49,7 +49,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Alerts',
                     data: {{ sev_values | safe }},
-                    backgroundColor: COLORS
+                    backgroundColor: {{ sev_labels | safe }}.map(function(severity) {
+                        return severity === 'critical' ? '#d94f4f' : severity === 'high' ? '#e3a329' : severity === 'medium' ? '#3478b8' : '#21866f';
+                    })
                 }]
             },
             options: { plugins: { legend: { display: false } } }
@@ -66,9 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Packets',
                     data: {{ daily_values | safe }},
-                    borderColor: '#0d6efd',
+                    borderColor: '#147d83',
                     fill: true,
-                    backgroundColor: 'rgba(13,110,253,.1)'
+                    backgroundColor: 'rgba(20,125,131,.12)'
                 }]
             },
             options: { plugins: { legend: { display: false } } }

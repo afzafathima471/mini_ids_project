@@ -14,7 +14,7 @@ python app.py
 
 Open browser: http://127.0.0.1:5000
 
-Default login: `admin` / `admin123`
+Create an account from the sign-in page, or use the default demo login: `admin` / `admin123`.
 
 ## Project Structure
 

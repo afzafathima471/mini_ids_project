@@ -7,6 +7,8 @@ import numpy as np
 import joblib
 import os
 import json
+import re
+from sqlalchemy.exc import IntegrityError
 
 # ── Bootstrap ─────────────────────────────────
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -98,7 +100,7 @@ def random_ip():
 # ── Routes ────────────────────────────────────
 @app.before_request
 def require_login():
-    if request.endpoint in ('login', 'static'):
+    if request.endpoint in ('login', 'signup', 'static'):
         return
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -132,6 +134,43 @@ def login():
         error = 'Invalid username or password.'
         flash(error, 'danger')
     return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if 'user_id' in session:
+        return redirect(url_for('index'))
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        if not re.fullmatch(r'[A-Za-z0-9_.-]{3,80}', username):
+            flash('Choose a username with 3–80 letters, numbers, dots, underscores, or hyphens.', 'danger')
+            return render_template('signup.html', username=username)
+        if len(password) < 8:
+            flash('Your password must be at least 8 characters long.', 'danger')
+            return render_template('signup.html', username=username)
+        if password != confirm_password:
+            flash('The passwords do not match. Please try again.', 'danger')
+            return render_template('signup.html', username=username)
+        if User.query.filter_by(username=username).first():
+            flash('That username is already taken. Please choose another.', 'danger')
+            return render_template('signup.html', username=username)
+
+        user = User(username=username, password_hash=generate_password_hash(password))
+        db.session.add(user)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash('That username is already taken. Please choose another.', 'danger')
+            return render_template('signup.html', username=username)
+
+        session['user_id'] = user.id
+        session['username'] = user.username
+        flash('Your account is ready. Welcome to Mini IDS!', 'success')
+        return redirect(url_for('index'))
+    return render_template('signup.html')
 
 @app.route('/logout')
 def logout():
